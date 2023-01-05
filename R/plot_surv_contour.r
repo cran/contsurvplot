@@ -47,6 +47,8 @@ plot_surv_contour <- function(time, status, variable, group=NULL, data, model,
                          times=fixed_t,
                          na.action="na.fail",
                          cif=cif,
+                         event_time=time,
+                         event_status=status,
                          ...)
 
   # correct label
@@ -57,7 +59,7 @@ plot_surv_contour <- function(time, status, variable, group=NULL, data, model,
   # plot it
   p <- ggplot2::ggplot(plotdata, ggplot2::aes(x=.data$time, y=.data$cont,
                                               z=.data$est)) +
-    ggplot2::geom_contour_filled(size=size, alpha=alpha, bins=bins,
+    ggplot2::geom_contour_filled(linewidth=size, alpha=alpha, bins=bins,
                                  binwidth=binwidth, breaks=breaks) +
     ggplot2::labs(x=xlab, y=ylab, title=title, subtitle=subtitle,
                   fill=legend.title) +

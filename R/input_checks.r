@@ -120,7 +120,9 @@ check_inputs_plots <- function(time, status, variable, group, data, model,
 
 ## Check inputs for the curve_cont function
 check_inputs_curve_cont <- function(data, variable, model, horizon,
-                                    times, cause, cif, na.action, group) {
+                                    times, cause, cif, na.action, group,
+                                    contrast, reference, ref_value,
+                                    event_time, event_status) {
   # correct variable
   if (!(length(variable)==1 && is.character(variable))) {
     stop("'variable' must be a single character string specifying a",
@@ -139,6 +141,43 @@ check_inputs_curve_cont <- function(data, variable, model, horizon,
   } else if (!is.null(group) && !is.factor(data[, group])) {
     stop("The column specified by the 'group' argument must be a factor.")
   }
+  # correct event_time
+  if (!is.null(event_time) & !(length(event_time)==1 &&
+                               is.character(event_time))) {
+    stop("'event_time' must be a single character string specifying a",
+         " variable in 'data'.")
+  } else if (!is.null(event_time) && !event_time %in% colnames(data)) {
+    stop(event_time, " is not a valid column name in 'data'.")
+  } else if (!is.null(event_time) && !is.numeric(data[, event_time])) {
+    stop("The column specified by the 'event_time' argument must be numeric.")
+  }
+  # correct event_status
+  if (!is.null(event_status) & !(length(event_status)==1 &&
+                               is.character(event_status))) {
+    stop("'event_status' must be a single character string specifying a",
+         " variable in 'data'.")
+  } else if (!is.null(event_status) && !event_status %in% colnames(data)) {
+    stop(event_status, " is not a valid column name in 'data'.")
+  } else if (!is.null(event_status) && !is.numeric(data[, event_status])) {
+    stop("The column specified by the 'event_status' argument must be numeric.")
+  }
+
+  # correct contrast
+  if (!(length(contrast)==1 && is.character(contrast) &&
+        contrast %in% c("none", "diff", "ratio"))) {
+    stop("'contrast' must be one of c('none', 'diff', 'ratio').")
+  }
+
+  # correct reference
+  if (!(length(reference)==1 && is.character(reference) &&
+        reference %in% c("km", "value"))) {
+    stop("'reference' must be one of c('km', 'value').")
+  }
+
+  # correct ref_value
+  if (!is.null(ref_value) & !(length(ref_value)==1 && is.numeric(ref_value))) {
+    stop("'ref_value' must be a single number or NULL.")
+  }
 
   # horizon
   check_horizon(horizon, data, variable)
@@ -150,6 +189,18 @@ check_inputs_curve_cont <- function(data, variable, model, horizon,
     stop("Missing values in 'times' are not allowed.")
   } else if (min(times) < 0) {
     stop("Some values in 'times' are smaller than 0, which is not allowed.")
+  }
+
+  # if reference="value", ref_value needs to be specified
+  if (!is.null(reference) && reference=="value" & is.null(ref_value)) {
+    stop("'ref_value' needs to be specified when using reference='value'.")
+  }
+
+  # if reference="km", event_time and event_status need to be specified
+  if (contrast!="none" && reference=="km" & (is.null(event_status) |
+                                             is.null(event_time))) {
+    stop("Both 'event_time' and 'event_status' must be specified when",
+         " using reference='km'.")
   }
 
   # a few more checks for the most popular case: coxph
@@ -173,5 +224,58 @@ check_inputs_curve_cont <- function(data, variable, model, horizon,
       stop("The 'group' argument needs to be included as independent",
            " variable in the 'model' object.")
     }
+  }
+}
+
+## Check inputs for special parameters in plot_surv_tiles
+check_inputs_surv_matrix <- function(border_color, border_size, numbers,
+                                     number_color, number_size, number_family,
+                                     number_fontface, number_digits, fixed_t,
+                                     horizon, n_col, n_row) {
+
+  # check if fixed_t is equally spaced
+  if (!is.null(fixed_t)) {
+    expected <- seq(fixed_t[1], fixed_t[length(fixed_t)],
+                    length.out=length(fixed_t))
+    if (!all(fixed_t==expected)) {
+      stop("'fixed_t' needs to be an equally spaced numeric vector.",
+           " For example, you could use seq(min, max, length.out=100).")
+    }
+  }
+
+  # check if horizon is equally spaced
+  if (!is.null(horizon)) {
+    expected <- seq(horizon[1], horizon[length(horizon)],
+                    length.out=length(horizon))
+    if (!all(horizon==expected)) {
+      stop("'horizon' needs to be an equally spaced numeric vector.",
+           " For example, you could use seq(min, max, length.out=100).")
+    }
+  }
+
+  # check other arguments
+  if (!is.null(border_color) && !(length(border_color)==1 &&
+                                  is.character(border_color))) {
+    stop("'border_color' needs to be a single character string specifying",
+         " the color of the rectangle borders or NULL.")
+  } else if (!(length(border_size)==1 && is.numeric(border_size))) {
+    stop("'border_size' needs to be a single number.")
+  } else if (!(length(numbers)==1 && is.logical(numbers))) {
+    stop("'numbers' must be either TRUE or FALSE.")
+  } else if (!(length(number_color)==1 && is.character(number_color))) {
+    stop("'number_color' needs to be a single character string specifying",
+         " the color of the text inside the rectangles.")
+  } else if (!(length(number_size)==1 && is.numeric(number_size))) {
+    stop("'number_size' needs to be a single number.")
+  } else if (!(length(number_family)==1 && is.character(number_family))) {
+    stop("'number_family' needs to be a single character string.")
+  } else if (!(length(number_fontface)==1 && is.character(number_fontface))) {
+    stop("'number_fontface' needs to be a single character string.")
+  } else if (!(length(number_digits)==1 && is.numeric(number_digits))) {
+    stop("'number_digits' needs to be a single number.")
+  } else if (!(length(n_col)==1 && is.numeric(n_col))) {
+    stop("'n_col' needs to be a single number.")
+  } else if (!(length(n_row)==1 && is.numeric(n_row))) {
+    stop("'n_row' needs to be a single number.")
   }
 }

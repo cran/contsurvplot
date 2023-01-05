@@ -5,6 +5,9 @@ knitr::opts_chunk$set(
 )
 
 ## ----echo=TRUE, message=FALSE, warning=FALSE, eval=FALSE----------------------
+#  install.packages("contsurvplot")
+
+## ----echo=TRUE, message=FALSE, warning=FALSE, eval=FALSE----------------------
 #  devtools::install_github("RobinDenz1/contsurvplot")
 
 ## ----setup, warning=FALSE, message=FALSE--------------------------------------
@@ -157,6 +160,22 @@ plot_surv_contour(time="time",
                   data=colon,
                   model=model,
                   bins=5)
+
+## ----echo=TRUE, fig.show=TRUE, fig.width=7, fig.height=5----------------------
+plot_surv_matrix(time="time",
+                 status="status",
+                 variable="nodes",
+                 data=colon,
+                 model=model)
+
+## ----echo=TRUE, fig.show=TRUE, fig.width=7, fig.height=5----------------------
+plot_surv_matrix(time="time",
+                 status="status",
+                 variable="nodes",
+                 data=colon,
+                 model=model,
+                 n_col=5,
+                 n_row=5)
 
 ## ----echo=TRUE, fig.show=TRUE, fig.width=7, fig.height=5----------------------
 plot_surv_3Dsurface(time="time",

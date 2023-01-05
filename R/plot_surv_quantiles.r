@@ -65,6 +65,8 @@ plot_surv_quantiles <- function(time, status, variable, group=NULL, data, model,
                          horizon=horizon,
                          times=fixed_t,
                          na.action="na.fail",
+                         event_time=time,
+                         event_status=status,
                          ...)
 
   # use the adjustedCurves package to calculate survival time quantiles
@@ -91,10 +93,11 @@ plot_surv_quantiles <- function(time, status, variable, group=NULL, data, model,
   }
 
   if (!is.null(single_color)) {
-    gg_lines <- ggplot2::geom_step(size=size, linetype=linetype, alpha=alpha,
-                                   color=single_color)
+    gg_lines <- ggplot2::geom_step(linewidth=size, linetype=linetype,
+                                   alpha=alpha, color=single_color)
   } else {
-    gg_lines <- ggplot2::geom_step(size=size, linetype=linetype, alpha=alpha)
+    gg_lines <- ggplot2::geom_step(linewidth=size, linetype=linetype,
+                                   alpha=alpha)
   }
 
   plt <- plt + gg_lines +
