@@ -136,7 +136,9 @@ plot_surv_heatmap(time="time",
                   status="status",
                   variable="nodes",
                   data=colon,
-                  model=model)
+                  model=model,
+                  start_color="blue",
+                  end_color="red")
 
 ## ----echo=TRUE, fig.show=TRUE, fig.width=7, fig.height=5----------------------
 plot_surv_heatmap(time="time",
@@ -144,7 +146,9 @@ plot_surv_heatmap(time="time",
                   variable="nodes",
                   data=colon,
                   model=model,
-                  contour_lines=TRUE)
+                  contour_lines=TRUE,
+                  start_color="blue",
+                  end_color="red")
 
 ## ----echo=TRUE, fig.show=TRUE, fig.width=7, fig.height=5----------------------
 plot_surv_contour(time="time",
